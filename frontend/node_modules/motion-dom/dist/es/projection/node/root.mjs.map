@@ -1,0 +1,1 @@
+{"version":3,"file":"root.mjs","sources":["../../../../src/projection/node/root.ts"],"sourcesContent":["import type { IProjectionNode } from \"./types\"\n\nexport const rootProjectionNode: { current: IProjectionNode | undefined } = {\n    current: undefined,\n}\n"],"names":[],"mappings":"AAEO,MAAM,kBAAkB,GAA6C;AACxE,IAAA,OAAO,EAAE,SAAS;;;;;"}

@@ -1,0 +1,1 @@
+throw Error(`Could not resolve "@metamask/connect-evm" imported by "@wagmi/connectors". Is it installed?`);

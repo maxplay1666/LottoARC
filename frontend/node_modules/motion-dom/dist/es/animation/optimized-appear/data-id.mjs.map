@@ -1,0 +1,1 @@
+{"version":3,"file":"data-id.mjs","sources":["../../../../src/animation/optimized-appear/data-id.ts"],"sourcesContent":["export const optimizedAppearDataId = \"framerAppearId\"\n\nexport const optimizedAppearDataAttribute = \"data-framer-appear-id\"\n"],"names":[],"mappings":"AAAO,MAAM,qBAAqB,GAAG;AAE9B,MAAM,4BAA4B,GAAG;;;;"}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Arc arch -->
+  <path d="M20 100 L20 58 Q20 18 60 18 Q100 18 100 58 L100 100" stroke="#C9A84C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- Spade shape -->
+  <path d="M60 34 C60 34 38 52 38 66 C38 74 44 78 52 76 C49 82 46 86 42 88 L78 88 C74 86 71 82 68 76 C76 78 82 74 82 66 C82 52 60 34 60 34Z" fill="#C9A84C"/>
+</svg>

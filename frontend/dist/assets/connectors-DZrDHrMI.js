@@ -1,0 +1,1 @@
+throw Error(`Could not resolve "@walletconnect/ethereum-provider" imported by "@wagmi/connectors". Is it installed?`);
