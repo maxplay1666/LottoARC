@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useContext, useRef } from 'react'
 import {
-  useAccount, useReadContract, useWriteContract,
+  useAccount, useReadContract, useReadContracts, useWriteContract,
   useWaitForTransactionReceipt, useSwitchChain, useConnect, useDisconnect,
 } from 'wagmi'
 import { erc20Abi } from 'viem'
@@ -888,15 +888,20 @@ function SortedOpenList({ ids, myAddress, isOwner, onAction }: {
   const mutedColor = isDark ? '#7A6840' : '#8C7040'
   const { t } = useLang()
 
-  const poolDataList = ids.map(id => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data } = useReadContract({
-      address: RAFFLE_ADDRESS, abi: RAFFLE_ABI, functionName: 'getPool',
-      args: [id], chainId: ARC_CHAIN_ID,
-      query: { refetchInterval: 8_000 },
-    })
-    return { id, data: data as PoolData | undefined }
+  // Keep the number of React hooks stable when the RPC updates the id list.
+  // Calling useReadContract inside ids.map() makes the hook count change from
+  // zero to N and crashes production React with error #310.
+  const { data: poolReads } = useReadContracts({
+    contracts: ids.map(id => ({
+      address: RAFFLE_ADDRESS, abi: RAFFLE_ABI, functionName: 'getPool' as const,
+      args: [id] as const, chainId: ARC_CHAIN_ID,
+    })),
+    query: { refetchInterval: 8_000 },
   })
+  const poolDataList = ids.map((id, index) => ({
+    id,
+    data: poolReads?.[index]?.result as PoolData | undefined,
+  }))
 
   const nowSec = useNow()
 
@@ -952,17 +957,18 @@ function PoolFilteredList({ allIds, tab, nowSec, myAddress, isOwner, onAction, m
   myAddress?: string; isOwner: boolean; onAction: () => void
   mutedColor: string; noHistoryLabel: string
 }) {
-  // Fetch status + deadline + autoDrawTimestamp for every pool in the list
-  // We use individual reads (wagmi caches per key) — acceptable for ≤20 pools per page
-  const statuses = allIds.map(id => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data } = useReadContract({
-      address: RAFFLE_ADDRESS, abi: RAFFLE_ABI, functionName: 'getPool',
-      args: [id], chainId: ARC_CHAIN_ID,
-      query: { refetchInterval: 12_000 },
-    })
-    return { id, data: data as PoolData | undefined }
+  // A single batched hook is safe even when allIds changes length.
+  const { data: statusReads } = useReadContracts({
+    contracts: allIds.map(id => ({
+      address: RAFFLE_ADDRESS, abi: RAFFLE_ABI, functionName: 'getPool' as const,
+      args: [id] as const, chainId: ARC_CHAIN_ID,
+    })),
+    query: { refetchInterval: 12_000 },
   })
+  const statuses = allIds.map((id, index) => ({
+    id,
+    data: statusReads?.[index]?.result as PoolData | undefined,
+  }))
 
   const filtered = statuses.filter(({ data }) => {
     if (!data) return false
@@ -1186,6 +1192,7 @@ function MyDashboard({ myAddress, isOwner, isTreasury, tbAmt, pendingT, confT, d
   const goldColor = isDark ? GOLD : GOLD_DARK
   const mutedColor = isDark ? '#7A6840' : '#8C7040'
   const nowSec = useNow()
+  const [myTab, setMyTab] = useState<'open'|'timeout'|'closed'|'cancelled'|'all'>('all')
 
   // My pools from contract (indexed per-user)
   const { data: myIdsRaw, refetch } = useReadContract({
@@ -1220,8 +1227,6 @@ function MyDashboard({ myAddress, isOwner, isTreasury, tbAmt, pendingT, confT, d
     color: active ? goldColor : mutedColor,
     boxShadow: active ? '0 2px 10px rgba(201,168,76,0.15)' : 'none',
   })
-  const [myTab, setMyTab] = useState<'open'|'timeout'|'closed'|'cancelled'|'all'>('all')
-
   return (
     <div>
       {/* Claimable + Treasury */}

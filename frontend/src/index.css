@@ -21,6 +21,33 @@ body {
   min-height: 100dvh;
 }
 
+.fatal-error {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  color: #e5c566;
+  background: #0d0d0d;
+}
+
+.fatal-error p {
+  color: #f0e4c0;
+}
+
+.fatal-error button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  color: #0d0d0d;
+  background: #c9a84c;
+  cursor: pointer;
+}
+
 .display {
   font-family: 'Space Grotesk', sans-serif;
 }
